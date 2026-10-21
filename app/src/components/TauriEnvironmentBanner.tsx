@@ -1,45 +1,45 @@
 import React, { useState } from 'react';
-import { openUrl } from '@tauri-apps/plugin-opener';
+import { DEFAULT_BRIDGE_URL } from '../services/bridgeClient';
 
-interface TauriEnvironmentBannerProps {
-  isBluetoothSupported: boolean;
+interface BridgeStatusBannerProps {
+  bridgeOnline: boolean;
+  isDemoMode: boolean;
 }
 
-export const TauriEnvironmentBanner: React.FC<TauriEnvironmentBannerProps> = ({
-  isBluetoothSupported,
+const START_CMD = 'python3 bridge/aidlab_bridge.py';
+
+export const TauriEnvironmentBanner: React.FC<BridgeStatusBannerProps> = ({
+  bridgeOnline,
+  isDemoMode,
 }) => {
   const [copied, setCopied] = useState(false);
-  const isTauri = typeof window !== 'undefined' && ('__TAURI_INTERNALS__' in window || '__TAURI__' in window);
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : 'http://localhost:1420';
 
-  const handleOpenInChrome = async () => {
-    try {
-      if (isTauri) {
-        await openUrl(currentUrl);
-      } else {
-        window.open(currentUrl, '_blank');
-      }
-    } catch (e) {
-      console.warn('Could not launch browser automatically:', e);
-      handleCopy();
-    }
+  const handleCopyCommand = () => {
+    navigator.clipboard?.writeText(START_CMD);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleCopy = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(currentUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    }
-  };
-
-  if (isBluetoothSupported && !isTauri) {
+  if (bridgeOnline) {
     return (
       <div className="env-banner success">
         <div className="env-banner-content">
-          <span className="env-badge chrome">Chrome / Web Bluetooth Ready</span>
+          <span className="env-badge chrome">Aidlab SDK Bridge Online</span>
           <span className="env-text">
-            Web Bluetooth is enabled. You can pair and connect directly to your Aidmed One device.
+            Connected to official native Aidlab C++ SDK bridge at <code>{DEFAULT_BRIDGE_URL}</code>. Ready to scan and stream 250 Hz ECG.
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  if (isDemoMode) {
+    return (
+      <div className="env-banner success">
+        <div className="env-banner-content">
+          <span className="env-badge chrome">Demo Simulator Active</span>
+          <span className="env-text">
+            Streaming synthetic 250 Hz PQRST ECG waveform with realistic baseline wander &amp; 50 Hz mains hum through the live DSP pipeline.
           </span>
         </div>
       </div>
@@ -57,23 +57,16 @@ export const TauriEnvironmentBanner: React.FC<TauriEnvironmentBannerProps> = ({
       </div>
       <div className="env-banner-content">
         <div className="env-header-row">
-          <strong>
-            {isTauri
-              ? 'Tauri V2 Desktop Environment Detected'
-              : 'Web Bluetooth Not Detected in this Browser'}
-          </strong>
+          <strong>Aidlab SDK Bridge Not Running ({DEFAULT_BRIDGE_URL})</strong>
         </div>
         <p className="env-description">
-          The Web Bluetooth API (<code>navigator.bluetooth</code>) is supported in{' '}
-          <strong>Google Chrome</strong> and Chromium browsers. On macOS/desktop, webviews (WebKit) do not provide
-          direct Bluetooth access. To connect via Bluetooth, open this page in Chrome or use the Demo Simulator below.
+          Aidmed One / Aidlab uses a compressed binary framing protocol over BLE decoded by the official{' '}
+          <code>aidlabsdk</code> native library. Run the Python bridge in a terminal (works in both Tauri Desktop and browsers), or toggle <strong>Demo Mode</strong> in the top right.
         </p>
         <div className="env-actions">
-          <button type="button" className="btn-primary-small" onClick={handleOpenInChrome}>
-            Open in Google Chrome ({currentUrl})
-          </button>
-          <button type="button" className="btn-secondary-small" onClick={handleCopy}>
-            {copied ? '✓ URL Copied!' : 'Copy Localhost URL'}
+          <code className="bridge-cmd-code">{START_CMD}</code>
+          <button type="button" className="btn-secondary-small" onClick={handleCopyCommand}>
+            {copied ? '✓ Command Copied' : 'Copy Bridge Command'}
           </button>
         </div>
       </div>

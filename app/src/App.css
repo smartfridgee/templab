@@ -999,3 +999,34 @@ body {
   font-size: 0.78rem;
   color: var(--text-muted);
 }
+
+.device-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.device-select {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.75rem;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.device-select:focus {
+  border-color: var(--border-focus);
+}
+
+.bridge-cmd-code {
+  background-color: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.65rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+  color: #34d399;
+}
+

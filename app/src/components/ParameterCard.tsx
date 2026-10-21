@@ -1,5 +1,5 @@
 import React from 'react';
-import { DeviceInfo, WearState } from '../types/bluetooth';
+import { DeviceInfo, WearState } from '../types/telemetry';
 
 interface HeartRateCardProps {
   heartRate?: number | null;

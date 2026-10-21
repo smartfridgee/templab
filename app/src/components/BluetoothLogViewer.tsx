@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogEntry } from '../types/bluetooth';
+import { LogEntry } from '../types/telemetry';
 
 interface BluetoothLogViewerProps {
   logs: LogEntry[];

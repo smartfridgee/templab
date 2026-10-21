@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "bridge": "python3 bridge/aidlab_bridge.py",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri"
